@@ -1,0 +1,5 @@
+__pycache__/
+venv/
+.idea/
+drivers/
+customer_analysis.db
