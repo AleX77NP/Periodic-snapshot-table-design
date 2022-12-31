@@ -20,7 +20,7 @@ def getWeekNumber(date):
 
 weekUDF = udf(lambda x: getWeekNumber(x), IntegerType())
 
-# pipeline main code
+# Pipeline main code --------------------------------------------------------------------------------------------------
 
 dw_handler = DataWarehouseHandler('customer_analysis.db')
 
@@ -56,24 +56,19 @@ df.write.mode('append').format('jdbc'). \
             driver='org.sqlite.JDBC', dbtable='STAGING', overwrite=True).save()
 
 current_year = datetime.now().year  # current year to restrict JOIN on week's natural key
+current_week = 5  # pretend to be 5th week of the year so csv data is this week's data
 
 sql_query = f"""
         INSERT INTO CUSTOMER_USAGE_EOW_SNAPSHOT (Customer_Key, Week_Key, Customer_Usage_EOW_Minutes)
         SELECT c.Customer_Key,
-               w.Week_Key,
-               s.Week_Activity_Minutes
-        FROM STAGING s
-        INNER JOIN CUSTOMER_DIM c ON
-            s.Customer_Email = c.Customer_Email
-        INNER JOIN WEEK_DIM w
+               COALESCE (w.Week_Key, {current_week}),
+               COALESCE(s.Week_Activity_Minutes, 0)
+        FROM CUSTOMER_DIM c
+        LEFT OUTER JOIN STAGING s ON
+            c.Customer_Email = s.Customer_Email
+        LEFT OUTER JOIN WEEK_DIM w
             ON s.Week_Number = w.Week_Number
             AND w.Year = {current_year}
-        LEFT OUTER JOIN CUSTOMER_USAGE_EOW_SNAPSHOT f
-            ON c.Customer_key = f.Customer_Key
-            AND w.Week_key = f.Week_Key
-        WHERE f.Customer_Key is NULL
-        GROUP BY c.Customer_Key,
-                 w.Week_Key  
     ;"""
 
 # insert fact rows
