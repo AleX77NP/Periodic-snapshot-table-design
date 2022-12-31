@@ -56,12 +56,12 @@ df.write.mode('append').format('jdbc'). \
             driver='org.sqlite.JDBC', dbtable='STAGING', overwrite=True).save()
 
 current_year = datetime.now().year  # current year to restrict JOIN on week's natural key
-current_week = 5  # pretend to be 5th week of the year so csv data is this week's data
+current_week = 58  # pretend to be 5th week of the year 2022 so csv data is this week's data
 
 sql_query = f"""
         INSERT INTO CUSTOMER_USAGE_EOW_SNAPSHOT (Customer_Key, Week_Key, Customer_Usage_EOW_Minutes)
         SELECT c.Customer_Key,
-               COALESCE (w.Week_Key, {current_week}),
+               COALESCE(w.Week_Key, {current_week}),
                COALESCE(s.Week_Activity_Minutes, 0)
         FROM CUSTOMER_DIM c
         LEFT OUTER JOIN STAGING s ON
@@ -69,6 +69,11 @@ sql_query = f"""
         LEFT OUTER JOIN WEEK_DIM w
             ON s.Week_Number = w.Week_Number
             AND w.Year = {current_year}
+        WHERE NOT EXISTS (
+            SELECT 1 FROM CUSTOMER_USAGE_EOW_SNAPSHOT f
+            WHERE f.Customer_Key = c.Customer_Key
+            AND f.Week_Key = COALESCE(w.Week_Key, {current_week})
+        )     
     ;"""
 
 # insert fact rows

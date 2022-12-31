@@ -34,7 +34,7 @@ week_dim = """ CREATE TABLE WEEK_DIM (
 customer_usage_eow_snapshot = """ CREATE TABLE CUSTOMER_USAGE_EOW_SNAPSHOT (
                                   Customer_Key INTEGER NOT NULL,
                                   Week_Key INTEGER NOT NULL,
-                                  Customer_Usage_EOW_Minutes SMALLINT NULL,
+                                  Customer_Usage_EOW_Minutes SMALLINT NOT NULL,
                                   PRIMARY KEY(Customer_Key, Week_Key),
                                   FOREIGN KEY(Customer_Key) REFERENCES CUSTOMER_DIM(Customer_Key),
                                   FOREIGN KEY(Week_Key) REFERENCES WEEK_DIM(Week_Key)
