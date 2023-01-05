@@ -10,6 +10,8 @@ from pyspark.sql.functions import col, udf
 from pyspark.sql.functions import sum as _sum
 from pyspark.sql.types import IntegerType
 
+DB_NAME = 'customer_analysis.db'
+
 
 # function that gets week number from date (string)
 def getWeekNumber(date):
@@ -22,7 +24,7 @@ weekUDF = udf(lambda x: getWeekNumber(x), IntegerType())
 
 # Pipeline main code --------------------------------------------------------------------------------------------------
 
-dw_handler = DataWarehouseHandler('customer_analysis.db')
+dw_handler = DataWarehouseHandler(DB_NAME)
 
 conf = SparkConf()  # create the configuration
 conf.set('spark.jars', './drivers/sqlite-jdbc-3.36.0.3.jar')  # set spark.jars
@@ -52,12 +54,14 @@ df = df.groupBy(group_cols) \
 
 # write data into staging table
 df.write.mode('append').format('jdbc'). \
-    options(url='jdbc:sqlite:customer_analysis.db',
+    options(url=f'jdbc:sqlite:{DB_NAME}',
             driver='org.sqlite.JDBC', dbtable='STAGING', overwrite=True).save()
 
 current_year = datetime.now().year  # current year to restrict JOIN on week's natural key
 current_week = 58  # pretend to be 5th week of the year 2022 so csv data is this week's data
 
+# here CUSTOMER_DIM is our main driver for the query, since we want to insert row even if there was no activity
+# only assumption is that no new user is in the new data, that should be covered via SCD before this
 sql_query = f"""
         INSERT INTO CUSTOMER_USAGE_EOW_SNAPSHOT (Customer_Key, Week_Key, Customer_Usage_EOW_Minutes)
         SELECT c.Customer_Key,
@@ -76,6 +80,6 @@ sql_query = f"""
         )     
     ;"""
 
-# insert fact rows
+# insert fact rows and delete data from staging table
 dw_handler.insert_fact(sql_query)
 dw_handler.cleanup()
