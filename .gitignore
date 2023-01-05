@@ -3,3 +3,7 @@ venv/
 .idea/
 drivers/
 customer_analysis.db
+airflow.db
+airflow.cfg
+webserver_config.py
+logs/
