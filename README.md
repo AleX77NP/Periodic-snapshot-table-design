@@ -23,7 +23,7 @@ File `pipeline.py` is PySpark script that takes new weekly data from `new_data.c
 data with operations such as `GROUP BY` and `SUM` in order to create weekly rows, since csv data
 is daily data.
 
-We save this result inside the `STAGING` table which is only used for this temp data, and is deleted 
+We save this result inside the `STAGING` table which is only used for this temporary data, and is deleted 
 after pipeline is finished.
 
 Finally, we use `LEFT OUTER JOIN` on CUSTOMER_DIM table to insert weekly data for every user.
