@@ -60,7 +60,8 @@ current_year = datetime.now().year  # current year to restrict JOIN on week's na
 current_week = 58  # 5th week of the year 2022 so csv data is this week's data
 
 # here CUSTOMER_DIM is our main driver for the query, since we want to insert row even if there was no activity
-# we want to do LEFT OUTER JOIN on CUSTOMER_DIM and WEEK_DIM to get proper foreign keys for our fact
+# we want to do LEFT OUTER JOIN on STAGING and WEEK_DIM tables to get proper foreign keys for our fact row
+# WHERE NOT EXISTS clause makes sure that we don't insert any duplicates
 # only assumption is that no new user is in the new data, that should be covered via SCD before this
 sql_query = f"""
         INSERT INTO CUSTOMER_USAGE_EOW_SNAPSHOT (Customer_Key, Week_Key, Customer_Usage_EOW_Minutes)
