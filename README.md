@@ -1,5 +1,5 @@
 # Periodic Snapshot Fact Table Design
-Medium article: 
+Medium article: https://medium.com/@joyo.development/periodic-snapshot-table-design-5f78036ecd54
 
 Periodic snapshot table is one of the four types of fact tables in Data Warehousing.
 
@@ -35,6 +35,9 @@ this is why `LEFT OUTER JOIN` is needed (if there was no activity by user - `NUL
 We also need `WHERE NOT EXISTS` clause in our query to make sure no duplicates are inserted (We check if there exists
 Fact Row with same Customer_Key & Week_Key combination). 
 (You can run pipeline multiple times and see that same data will not be inserted).
+
+Of course, we need to use `COALESCE` since data in STAGING table will be NULL if user was not present/active
+during the past week.
 
 ## DAG
 - Pipeline can be run from Airflow as a DAG using SparkSubmitOperator.
