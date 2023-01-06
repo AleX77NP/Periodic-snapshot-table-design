@@ -3,10 +3,13 @@ Periodic snapshot table is one of the three types of fact tables in Data Warehou
 
 It contains periodic data from some time interval like week, month etc.
 
-In this example we track customers activity per week in minutes. 
+In this example we track customers activity on some web portal per week in minutes. 
 Full Data Warehouse schema is given on the image below:
 
 <img src="https://github.com/AleX77NP/Periodic-snapshot-table-design/raw/main/images/schema.png">
+
+We have two dimension tables - `CUSTOMER_DIM` and `WEEK_DIM`, and our Periodic snapshot fact table 
+`CUSTOMER_USAGE_EOW_SNAPSHOT` (EOW = End of week).
 
 ## Setup
 First, we need to create tables in our data warehouse, and populate our dimension tables for customers and weeks.
