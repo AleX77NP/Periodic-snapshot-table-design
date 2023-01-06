@@ -19,7 +19,7 @@ In order to setup data warehouse and tables, do the following:
 2. Run `python3 populate_dimensions.py` to insert 5 users from `sql/` folder and all weeks for 2021 ad 2022
 
 ## Pipeline
-File `pipeline.py` is PySpark script that takes new weekly data from `new_data.csv` file and prepares
+File `pipeline.py` is a PySpark script that takes new weekly data from `new_data.csv` file and prepares
 data with operations such as `GROUP BY` and `SUM` in order to create weekly rows, since csv data
 is daily data.
 
