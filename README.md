@@ -1,5 +1,5 @@
 # Periodic Snapshot Fact Table Design
-Periodic snapshot table is one of the three types of fact tables in Data Warehousing.
+Periodic snapshot table is one of the four types of fact tables in Data Warehousing.
 
 It contains periodic data from some time interval like week, month etc.
 
