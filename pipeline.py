@@ -57,7 +57,7 @@ df.write.mode('append').format('jdbc'). \
             driver='org.sqlite.JDBC', dbtable='STAGING', overwrite=True).save()
 
 current_year = datetime.now().year  # current year to restrict JOIN on week's natural key
-current_week = 58  # 5th week of the year 2022 so csv data is this week's data
+past_week = 58  # 5th week of the year 2022 so csv data is past week's data
 
 # here CUSTOMER_DIM is our main driver for the query, since we want to insert row even if there was no activity
 # we want to do LEFT OUTER JOIN on STAGING and WEEK_DIM tables to get proper foreign keys for our fact row
@@ -66,7 +66,7 @@ current_week = 58  # 5th week of the year 2022 so csv data is this week's data
 sql_query = f"""
         INSERT INTO CUSTOMER_USAGE_EOW_SNAPSHOT (Customer_Key, Week_Key, Customer_Usage_EOW_Minutes)
         SELECT c.Customer_Key,
-               COALESCE(w.Week_Key, {current_week}),
+               COALESCE(w.Week_Key, {past_week}),
                COALESCE(s.Week_Activity_Minutes, 0)
         FROM CUSTOMER_DIM c
         LEFT OUTER JOIN STAGING s ON
@@ -77,7 +77,7 @@ sql_query = f"""
         WHERE NOT EXISTS (
             SELECT 1 FROM CUSTOMER_USAGE_EOW_SNAPSHOT f
             WHERE f.Customer_Key = c.Customer_Key
-            AND f.Week_Key = COALESCE(w.Week_Key, {current_week})
+            AND f.Week_Key = COALESCE(w.Week_Key, {past_week})
         )     
     ;"""
 
