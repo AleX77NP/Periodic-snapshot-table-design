@@ -1,4 +1,5 @@
 import sqlite3
+from constants import DB_LOCATION
 
 
 def insert_weeks(cursor):
@@ -25,7 +26,7 @@ def insert_customers(cursor):
 
 
 def insert_dimension_data():
-    wh_connection = sqlite3.connect('customer_analysis.db')
+    wh_connection = sqlite3.connect(DB_LOCATION)
     cursor = wh_connection.cursor()
 
     insert_weeks(cursor)

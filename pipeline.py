@@ -44,7 +44,7 @@ df = df.withColumn('Week_Number', weekUDF(col('Date')))
 # data should be grouped by customer email and week
 group_cols = ['Customer_Email', 'Week_Number']
 
-# sum up all activity for for every customer by week
+# sum up all activity for every customer by week
 df = df.groupBy(group_cols) \
     .agg(_sum('Activity_Minutes').alias('Week_Activity_Minutes')) \
     .orderBy('Week_Number')
