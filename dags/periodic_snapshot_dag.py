@@ -1,7 +1,15 @@
-import airflow
-from airflow.models import DAG
+from airflow import DAG
 from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
+from airflow.operators.python import PythonOperator
 from constants import JAR_PATH
+
+from datetime import timedelta
+import pendulum
+
+
+def intro():
+    print('Preparing to insert weekly data into periodic snapshot table...')
+
 
 default_args = {
     'owner': 'Aleksandar Milanovic',
@@ -10,20 +18,27 @@ default_args = {
 }
 
 with DAG(
-    dag_id='periodic_snapshot',
-    default_args=default_args,
-    description='A simple periodic snapshot table example',
-    schedule_interval='@daily',
-    start_date='2023-01-06',
-    catchup=False,
-    tags=['AleX77NP, periodic snapshot table example'],
+        dag_id='periodic_snapshot_dag',
+        default_args=default_args,
+        description='A simple periodic snapshot table example',
+        schedule_interval=timedelta(days=7),
+        start_date=pendulum.datetime(2022, 2, 6, tz='UTC'),
+        catchup=False,
+        tags=['AleX77NP, periodic snapshot table example'],
 ) as dag:
+    intro_job = PythonOperator(
+        task_id='intro_job',
+        python_callable=intro,
+    )
     spark_periodic_snapshot_job = SparkSubmitOperator(
         task_id='spark_periodic_snapshot_job',
         application='/Users/aleksandar77np/Desktop/DE/FactTables/pipeline.py',
         name='periodic_snapshot',
-        total_executor_cores=1,  # due to nature of sqlite in this example
-        conn_id='spark_default',
+        executor_cores=1,
+        total_executor_cores=1, # due to nature of sqlite in this example
+        conn_id='spark_local',
         jars=JAR_PATH,
         driver_class_path=JAR_PATH
-)
+    )
+
+    intro_job >> spark_periodic_snapshot_job

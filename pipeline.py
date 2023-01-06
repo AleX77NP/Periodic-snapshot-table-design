@@ -1,7 +1,7 @@
 import findspark
 from datetime import datetime
 from warehouse_handler import DataWarehouseHandler
-from constants import DB_NAME, JAR_PATH
+from constants import DB_LOCATION, JAR_PATH
 
 findspark.init()
 
@@ -23,7 +23,7 @@ weekUDF = udf(lambda x: getWeekNumber(x), IntegerType())
 
 # Pipeline main code --------------------------------------------------------------------------------------------------
 
-dw_handler = DataWarehouseHandler(DB_NAME)
+dw_handler = DataWarehouseHandler(DB_LOCATION)
 
 conf = SparkConf()  # create the configuration
 conf.set('spark.jars', JAR_PATH)
@@ -33,7 +33,6 @@ conf.set('spark.jars', JAR_PATH)
 spark = SparkSession.builder \
     .config(conf=conf) \
     .appName('Customer activity analysis') \
-    .master('local') \
     .getOrCreate()
 
 # load daily batch of data that represents user activity on specific day
@@ -54,11 +53,11 @@ df = df.groupBy(group_cols) \
 
 # write data into staging table
 df.write.mode('append').format('jdbc'). \
-    options(url=f'jdbc:sqlite:{DB_NAME}',
+    options(url=f'jdbc:sqlite:{DB_LOCATION}',
             driver='org.sqlite.JDBC', dbtable='STAGING', overwrite=True).save()
 
 current_year = datetime.now().year  # current year to restrict JOIN on week's natural key
-current_week = 58  # pretend to be 5th week of the year 2022 so csv data is this week's data
+current_week = 58  # 5th week of the year 2022 so csv data is this week's data
 
 # here CUSTOMER_DIM is our main driver for the query, since we want to insert row even if there was no activity
 # we want to do LEFT OUTER JOIN on CUSTOMER_DIM and WEEK_DIM to get proper foreign keys for our fact

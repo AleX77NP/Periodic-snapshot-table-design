@@ -1,7 +1,7 @@
 import sqlite3
-from constants import DB_NAME
+from constants import DB_LOCATION
 
-wh_connection = sqlite3.connect(DB_NAME)
+wh_connection = sqlite3.connect(DB_LOCATION)
 
 cursor = wh_connection.cursor()
 
