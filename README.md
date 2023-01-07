@@ -22,7 +22,7 @@ In order to setup data warehouse and tables, do the following:
 
 ## Pipeline
 File `pipeline.py` is a PySpark script that takes new weekly data from `new_data.csv` file and prepares
-data with operations such as `GROUP BY` and `SUM` in order to create weekly rows, since csv data
+data with `GROUP BY` (by user and week) and `SUM` on daily activities in order to create weekly rows, since csv data
 is daily data.
 
 We save this result inside the `STAGING` table which is only used for this temporary data, and is deleted 

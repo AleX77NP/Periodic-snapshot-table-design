@@ -1,7 +1,7 @@
 from airflow import DAG
 from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
 from airflow.operators.python import PythonOperator
-from constants import JAR_PATH
+from constants import APPLICATION_PATH, JAR_PATH
 
 from datetime import timedelta
 import pendulum
@@ -32,7 +32,7 @@ with DAG(
     )
     spark_periodic_snapshot_job = SparkSubmitOperator(
         task_id='spark_periodic_snapshot_job',
-        application='/Users/aleksandar77np/Desktop/DE/FactTables/pipeline.py',
+        application=f'{APPLICATION_PATH}/pipeline.py',
         name='periodic_snapshot',
         executor_cores=1,
         total_executor_cores=1, # due to nature of sqlite in this example
