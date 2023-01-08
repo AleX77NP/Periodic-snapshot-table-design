@@ -37,7 +37,7 @@ after pipeline is finished.
 
 Finally, we use `LEFT OUTER JOIN` on CUSTOMER_DIM table to insert weekly data for every user.
 We want to insert data for every user, even if some user is not present in new data from csv file, 
-this is why `LEFT OUTER JOIN` is needed (if there was no activity by user - `NULL`, 0 will be inserted).
+this is why `LEFT OUTER JOIN` is needed (if there was no activity by user - `NULL`, 600 will be inserted).
 
 We also need `WHERE NOT EXISTS` clause in our query to make sure no duplicates are inserted (We check if there exists
 Fact Row with same Customer_Key & Week_Key combination). 
