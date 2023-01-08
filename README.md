@@ -18,7 +18,7 @@ We have two dimension tables - `CUSTOMER_DIM` and `WEEK_DIM`, and our Periodic s
 
 `Customer_Usage_Activity_EOW_Minutes_Remaining` column in fact table represents number of remaining minutes customer gets to spend on portal during that week.
 
-This type of measure is called semi-additive measure, because it cannot it’s not additive — we cannot just sum up all remaining minutes from every week and get total, because this value resets to 600 at the beginning of every new week. However, we can calculate things like average remaining minutes per customer across weeks, or average remaining minutes for every week. This is why this type of table has “Snapshot” in its name.
+This type of measure is called semi-additive measure, because it cannot it’s not additive — we cannot just sum up all remaining minutes from every week and get total, because this value resets to 600 at the beginning of every new week. However, we can perform other numeric operations, calculate things like average remaining minutes per customer across weeks, average remaining minutes for every week or total remaining minutes for specific week. This is why this type of table has “Snapshot” in its name.
 
 ## Setup
 First, we need to create tables in our data warehouse, and populate our dimension tables for customers and weeks.
