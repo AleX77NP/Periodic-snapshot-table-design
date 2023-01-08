@@ -35,7 +35,7 @@ with DAG(
         application=f'{APPLICATION_PATH}/pipeline.py',
         name='periodic_snapshot',
         executor_cores=1,
-        total_executor_cores=1, # due to nature of sqlite
+        total_executor_cores=1,  # due to nature of sqlite
         conn_id='spark_local',
         jars=JAR_PATH,
         driver_class_path=JAR_PATH
