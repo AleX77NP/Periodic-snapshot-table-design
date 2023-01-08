@@ -22,7 +22,7 @@ with DAG(
         default_args=default_args,
         description='A simple periodic snapshot table example',
         schedule_interval=timedelta(days=7),
-        start_date=pendulum.datetime(2022, 2, 6, tz='UTC'),
+        start_date=pendulum.datetime(2022, 2, 7, tz='UTC'),
         catchup=False,
         tags=['AleX77NP, periodic snapshot table example'],
 ) as dag:
