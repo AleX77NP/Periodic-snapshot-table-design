@@ -21,6 +21,9 @@ def getWeekNumber(date):
 
 weekUDF = udf(lambda x: getWeekNumber(x), IntegerType())
 
+# 600 is the maximum minutes that user can spend per week, we subtract total minutes spent from 600 with this UDF
+remainingWeekMinutesUDF = udf(lambda x: 600 - x, IntegerType())
+
 # Pipeline main code --------------------------------------------------------------------------------------------------
 
 dw_handler = DataWarehouseHandler(DB_LOCATION)
@@ -49,6 +52,9 @@ df = df.groupBy(group_cols) \
     .agg(_sum('Activity_Minutes').alias('Week_Activity_Minutes')) \
     .orderBy('Week_Number')
 
+df = df.withColumn('Week_Activity_Minutes_Remaining', remainingWeekMinutesUDF(col('Week_Activity_Minutes')))
+df = df.drop(col('Week_Activity_Minutes'))  # this column is not needed anymore after we get the remaining minutes
+
 # df.show()
 
 # write data into staging table
@@ -64,10 +70,10 @@ past_week = 58  # 5th week of the year 2022 so csv data is past week's data
 # WHERE NOT EXISTS clause makes sure that we don't insert any duplicates
 # only assumption is that no new user is in the new data, that should be covered via SCD before this
 sql_query = f"""
-        INSERT INTO CUSTOMER_USAGE_EOW_SNAPSHOT (Customer_Key, Week_Key, Customer_Usage_EOW_Minutes)
+        INSERT INTO CUSTOMER_USAGE_EOW_SNAPSHOT (Customer_Key, Week_Key, Customer_Usage_EOW_Minutes_Remaining)
         SELECT c.Customer_Key,
                COALESCE(w.Week_Key, {past_week}),
-               COALESCE(s.Week_Activity_Minutes, 0)
+               COALESCE(s.Week_Activity_Minutes_Remaining, 600)
         FROM CUSTOMER_DIM c
         LEFT OUTER JOIN STAGING s ON
             c.Customer_Email = s.Customer_Email
